@@ -10,6 +10,20 @@ export default [
       },
     ],
   },
+
+
+  {
+    path: '/test',
+    component: '../layouts/BlankLayout',
+    routes: [
+      {
+        name: 'product',
+        path: '/test/product',
+        component: './test/Products',
+      },
+    ],
+  },
+
   {
     path: '/',
     component: '../layouts/SecurityLayout',
