@@ -21,11 +21,6 @@ export default [
             path: '/todo/list',
             component: './todo/list',
         },
-        {
-            name: 'todo-detail',
-            path: '/todo/detail/:id',
-            component: './todo/detail',
-        },
     ],
 },
 

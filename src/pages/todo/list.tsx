@@ -1,7 +1,6 @@
 import React from 'react';
 import {connect, Dispatch} from 'dva';
 import {Table, Button} from 'antd';
-import {Link} from 'umi';
 import {TodoListType, TodoItemType} from "@/models/todos";
 import TodoAdd from "./components/TodoAdd";
 import StatusConf from './StatusConf';
@@ -36,9 +35,7 @@ const TodoList = ({todos, dispatch}: todoListProps) => {
             title: '操作',
             render: (todo: TodoItemType) => (
                 <div>
-                    <Link to={`/todo/detail/${todo.id}`}>
-                        <Button>查看</Button>
-                    </Link>
+                    <Button>编辑</Button>
                     <Button
                         onClick={() => handleRemove(todo.id)}
                         style={{marginLeft: '10px'}}
@@ -57,6 +54,8 @@ const TodoList = ({todos, dispatch}: todoListProps) => {
                 dataSource={todos}
                 columns={columns}
                 rowKey="id"
+                pagination={false}
+                style={{marginBottom: '32px'}}
             />
             <TodoAdd/>
         </div>

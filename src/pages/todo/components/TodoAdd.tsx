@@ -13,7 +13,7 @@ interface TodoAddProps {
     form: FormComponentProps['form'];
 }
 
-interface todosState {
+interface TodoAddState {
     todos: TodoListType
 }
 
@@ -68,6 +68,6 @@ const TodoAdd = (props: TodoAddProps) => {
 };
 
 // 将命名空间为 todos 的 state 对象作为 props 传入 TodoAdd 组件
-export default connect(({todos}: todosState) => ({
+export default connect(({todos}: TodoAddState) => ({
     todos,
 }))(Form.create<TodoAddProps>()(TodoAdd));
