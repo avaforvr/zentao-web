@@ -12,17 +12,17 @@ export default [
     },
 
 
-{
-    path: '/todo',
-    component: '../layouts/BasicLayout',
-    routes: [
-        {
-            name: 'todo-list',
-            path: '/todo/list',
-            component: './todo/list',
-        },
-    ],
-},
+    {
+        path: '/todos',
+        component: '../layouts/BasicLayout',
+        routes: [
+            {
+                name: 'todos',
+                path: '/todos',
+                component: './todos',
+            },
+        ],
+    },
 
     {
         path: '/',
