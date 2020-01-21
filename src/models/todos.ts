@@ -1,30 +1,35 @@
 import {Reducer, AnyAction} from "redux";
+import {Effect, Subscription} from "dva";
+import {fetchTodos, addTodo, editTodo, removeTodo} from '@/services/todos';
 
 export interface TodoItemType {
     id: number,
     title: string,
-    status: 'todo' | 'doing' | 'done'
+    status: '未开始' | '进行中' | '已完成'
 }
 
 export type TodoListType = Array<TodoItemType>;
 
+export interface ResponseType {
+    status: string,
+    data: any
+}
+
 export interface TodosModelType {
     namespace: string;
     state: TodoListType;
+    effects: {
+        fetch: Effect;
+        add: Effect;
+        edit: Effect;
+        remove: Effect;
+    };
     reducers: {
-        add: Reducer<Array<TodoItemType>>;
-        remove: Reducer<TodoListType>;
         update: Reducer<TodoListType>;
     };
-}
-
-// todo.id 自增，添加新项时获取新的 id
-function getNewId(list: TodoListType): number {
-    let maxId: number = 0;
-    list.forEach(item => {
-        maxId = Math.max(maxId, item.id);
-    });
-    return maxId + 1;
+    subscriptions: {
+        setup: Subscription;
+    };
 }
 
 const Model: TodosModelType = {
@@ -32,34 +37,48 @@ const Model: TodosModelType = {
     namespace: 'todos',
 
     // 初始值
-    state: [
-        {id: 1, title: '处理新邮件', status: 'done'},
-        {id: 2, title: '文档编写', status: 'doing'},
-        {id: 3, title: '日报邮件', status: 'todo'},
-    ],
+    state: [],
 
-    reducers: {
-        // 添加
-        add(state: TodoListType = [], {payload}: AnyAction): TodoListType {
-            return [
-                ...state,
-                {
-                    id: getNewId(state),
-                    ...payload
-                }
-            ];
+    effects: {
+        // 获取初始列表
+        * fetch(_, {put, call}) {
+            const response: ResponseType = yield call(fetchTodos);
+            yield put({type: 'update', payload: response.data});
         },
-        // 删除
-        remove(state: TodoListType = [], {payload: id}: AnyAction): TodoListType {
-            return state.filter(todo => todo.id !== id)
+        // 添加
+        * add({payload}: AnyAction, {put, call}) {
+            const response: ResponseType = yield call(addTodo, payload);
+            yield put({type: 'update', payload: response.data});
         },
         // 更新
-        update(state: TodoListType = [], {payload}: AnyAction): TodoListType {
-            return state.map(todo =>
-                todo.id === payload.id ? {...todo, ...payload} : todo
-            );
+        * edit({payload}, {put, call}) {
+            const response: ResponseType = yield call(editTodo, payload);
+            yield put({type: 'update', payload: response.data});
         },
-    }
+        // 删除
+        * remove({payload: id}, {put, call}) {
+            const response: ResponseType = yield call(removeTodo, {id});
+            yield put({type: 'update', payload: response.data});
+        },
+    },
+
+    reducers: {
+        // 更新 todos 数组
+        update(_: any, {payload: todos}: AnyAction): TodoListType {
+            return todos;
+        }
+    },
+    subscriptions: {
+        setup({dispatch, history}) {
+            history.listen(({pathname}) => {
+                if (pathname === '/todos') {
+                    dispatch({
+                        type: 'fetch',
+                    });
+                }
+            });
+        },
+    },
 };
 
 export default Model;
